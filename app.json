@@ -41,7 +41,6 @@
     "plugins": [
       "./plugins/withMediaProjection",
       "./plugins/withBatteryOptimization",
-      "./modules/screen-capture",
       [
         "expo-build-properties",
         {

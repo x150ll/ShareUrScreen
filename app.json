@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Share Ur Screen",
-    "slug": "share-ur-screen",
+    "slug": "shareurscreen",
     "version": "1.0.0",
     "runtimeVersion": {
       "policy": "appVersion"
@@ -56,7 +56,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "3dd7d9d5-a112-454d-8390-735f22fd8a58"
+        "projectId": "6fc7daec-d052-41ee-b950-1f21b79c0220"
       },
       "turn": {
         "username":   "$EXPRESSTURN_USERNAME",

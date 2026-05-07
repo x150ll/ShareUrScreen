@@ -1,0 +1,108 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: 'EAS Build Profile'
+        required: true
+        default: 'preview'
+        type: choice
+        options: [ development, preview, production ]
+
+jobs:
+  # ─── مرحلة 1: فحص TypeScript ───────────────────────────
+  lint:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: npx tsc --noEmit
+
+  # ─── مرحلة 2: بناء APK محلياً ─────────────────────────
+  build-local:
+    name: Build APK (Gradle)
+    runs-on: ubuntu-latest
+    needs: lint
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Expo Prebuild — توليد android/
+        run: npx expo prebuild --platform android --clean --no-install
+        env:
+          EXPO_NO_TELEMETRY: 1
+
+      - name: Copy google-services.json
+        run: cp google-services.json android/app/google-services.json
+
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Build Debug APK
+        run: cd android && ./gradlew assembleDebug --no-daemon
+        env:
+          GRADLE_OPTS: '-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m'
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShareUrScreen-debug-${{ github.sha }}
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
+
+  # ─── مرحلة 3: EAS Build (اختياري) ─────────────────────
+  build-eas:
+    name: Build via EAS
+    runs-on: ubuntu-latest
+    needs: lint
+    if: |
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      vars.USE_EAS == 'true'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}

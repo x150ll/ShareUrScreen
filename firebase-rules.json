@@ -1,0 +1,111 @@
+{
+  "rules": {
+    "sessions": {
+      // ─── قراءة عامة محدودة ─────────────────────────────────────────────
+      // المشاهدون يقرأون sessions/{code} للتحقق من وجود الجلسة
+      // لكن لا يمكن قراءة sessions/ كاملاً (منع enumeration)
+      ".read": false,
+
+      "$sessionCode": {
+        // ✅ قراءة أي جلسة بكودها — للمشاهدين
+        ".read": true,
+
+        // ✅ الكتابة: فقط إذا كانت البيانات مكتملة والكود متطابق
+        ".write": "
+          newData.hasChildren(['hostId', 'code', 'status', 'createdAt', 'expiresAt']) &&
+          newData.child('code').val() === $sessionCode &&
+          newData.child('expiresAt').val() > now
+        ",
+
+        // ─── حقول فردية ───────────────────────────────────────────────────
+        "status": {
+          ".validate": "
+            newData.val() === 'waiting' ||
+            newData.val() === 'live'    ||
+            newData.val() === 'ended'
+          "
+        },
+
+        "viewerCount": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+        },
+
+        "hostId": {
+          // لا يُعدَّل بعد الإنشاء
+          ".validate": "!data.exists() || data.val() === newData.val()"
+        },
+
+        "expiresAt": {
+          // يجب أن يكون في المستقبل وليس أبعد من 24 ساعة
+          ".validate": "
+            newData.isNumber() &&
+            newData.val() > now &&
+            newData.val() < (now + 86400001)
+          "
+        },
+
+        // ─── المشاهدون ────────────────────────────────────────────────────
+        "viewers": {
+          "$viewerId": {
+            ".read":  true,
+            ".write": true,
+            ".validate": "
+              newData.hasChild('joinedAt') &&
+              newData.child('joinedAt').isNumber()
+            "
+          }
+        },
+
+        // ─── Signaling (SDP + ICE) ─────────────────────────────────────────
+        "signals": {
+          "$viewerId": {
+            ".read":  true,
+            ".write": true,
+
+            "offer": {
+              ".validate": "
+                newData.hasChildren(['type', 'sdp']) &&
+                newData.child('type').val() === 'offer'
+              "
+            },
+
+            "answer": {
+              ".validate": "
+                newData.hasChildren(['type', 'sdp']) &&
+                newData.child('type').val() === 'answer'
+              "
+            },
+
+            "hostCandidates": {
+              "$candidateId": {
+                ".validate": "newData.hasChild('candidate')"
+              }
+            },
+
+            "viewerCandidates": {
+              "$candidateId": {
+                ".validate": "newData.hasChild('candidate')"
+              }
+            },
+
+            "kicked": {
+              ".validate": "newData.isBoolean()"
+            },
+
+            "requestedQuality": {
+              ".validate": "
+                newData.hasChild('quality') &&
+                (
+                  newData.child('quality').val() === '360p'  ||
+                  newData.child('quality').val() === '480p'  ||
+                  newData.child('quality').val() === '720p'  ||
+                  newData.child('quality').val() === '1080p'
+                )
+              "
+            }
+          }
+        }
+      }
+    }
+  }
+}

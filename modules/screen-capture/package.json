@@ -1,0 +1,14 @@
+{
+  "name": "screen-capture",
+  "version": "1.0.0",
+  "description": "Expo module for internal audio capture via MediaProjection",
+  "main": "index.ts",
+  "expo": {
+    "plugin": "./plugin"
+  },
+  "private": true,
+  "peerDependencies": {
+    "expo": "*",
+    "expo-modules-core": "*"
+  }
+}

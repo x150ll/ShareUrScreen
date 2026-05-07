@@ -1,0 +1,68 @@
+{
+  "expo": {
+    "name": "Share Ur Screen",
+    "slug": "share-ur-screen",
+    "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A0A0F"
+    },
+    "notification": {
+      "icon": "./assets/notification-icon.png",
+      "color": "#7B2FFF"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.shareurscreen.app",
+      "versionCode": 5,
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION",
+        "android.permission.WAKE_LOCK",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
+      ]
+    },
+    "plugins": [
+      "./plugins/withMediaProjection",
+      "./plugins/withBatteryOptimization",
+      "./modules/screen-capture",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "minSdkVersion": 26,
+            "buildToolsVersion": "35.0.0",
+            "kotlinVersion": "1.9.25"
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3dd7d9d5-a112-454d-8390-735f22fd8a58"
+      },
+      "turn": {
+        "username":   "$EXPRESSTURN_USERNAME",
+        "credential": "$EXPRESSTURN_CREDENTIAL"
+      }
+    }
+  }
+}

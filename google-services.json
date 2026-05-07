@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "46915901640",
+    "project_id": "share-ur-screen",
+    "storage_bucket": "share-ur-screen.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:46915901640:android:856b241595a38589e1adfd",
+        "android_client_info": {
+          "package_name": "com.shareurscreen.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdmAOuEgfIjOG96a7NLLIPEt7o0hA3KA4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

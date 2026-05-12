@@ -1,0 +1,32 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Android Build
+android/app/build/
+android/.gradle/
+android/local.properties
+
+# Firebase — لا ترفع في repo عام
+google-services.json
+
+# Keystore — لا ترفع أبداً
+android/app/release.keystore
+# android/app/debug.keystore  # يمكن رفعه للـ CI
+
+# Logs
+*.log
+
+# Metro
+.metro-health-check*
+
+# Editor
+.idea/
+.vscode/
+*.suo
+
+# OS
+.DS_Store
+
+# Temp
+**/.trashed-*

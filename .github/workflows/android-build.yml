@@ -52,16 +52,12 @@ jobs:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
 
-      # ── الخطوة الأولى الحرجة: إعداد Gradle ──────────────
-      # نثبت Gradle مباشرة ثم نولّد wrapper بدلاً من الاعتماد على jar موجود
-      - name: Setup Gradle ${{ env.GRADLE_VERSION }}
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: ${{ env.GRADLE_VERSION }}
+      - name: Install Node dependencies
+        run: npm install
 
+      # ── توليد gradle-wrapper.jar بعد npm install ────────
       - name: Generate Gradle Wrapper
         run: |
-          # نولّد gradle wrapper في مجلد android
           chmod +x android/gradlew 2>/dev/null || true
           JAR="android/gradle/wrapper/gradle-wrapper.jar"
           SIZE=$(wc -c < "$JAR" 2>/dev/null || echo 0)
@@ -72,9 +68,6 @@ jobs:
             cd ..
           fi
           echo "gradle-wrapper.jar: $(wc -c < $JAR) bytes"
-
-      - name: Install Node dependencies
-        run: npm install
 
       # ── google-services.json ──────────────────────────────
       - name: Setup google-services.json
